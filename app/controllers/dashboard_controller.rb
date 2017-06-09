@@ -4,6 +4,7 @@ class DashboardController < ApplicationController
     @market_data =
       get_market_data.sort_by { |d| -d[:holdings_btc] }
       .select { |d| !d[:trade_pair].in?(Market.disabled_markets) }
+    @positions = @market_data.select { |d| d[:holdings_btc] != 0 }
   end
 
 private
@@ -21,10 +22,11 @@ private
         .where(trade_type: 'sell').pluck("SUM(from_amount), SUM(to_amount), MAX(trade_at)").first
 
       last_trade = MarketTrade.where(trade_pair: trade_pair).order(:trade_at).last
+      last_sell = MarketTrade.where(trade_pair: trade_pair, trade_type: 'sell').order(:trade_at).last
 
       open_buy_trades =
         MarketTrade.where(trade_pair: trade_pair)
-        .where(trade_type: 'buy').where(buy_settled: false).order(:trade_at)
+        .where(trade_type: 'buy').where(buy_settled: false).chronological
 
       open_buy_trade_costs =
         open_buy_trades.each_with_object([]) do |e, a|
@@ -79,9 +81,11 @@ private
         sold_amount: settled_buys[0],
         sold_price: safe_div(sold_base[1], sold_base[0]),
         last_sold_at: sold_base[2],
+        last_sale_rate: last_sell.try!(:rate),
         sales_profit: sales_profit,
         sales_buy_cost: BigDecimal(settled_buys[1] || 0),
         sales_profit_ratio: safe_div(sales_profit, settled_buys[1]),
+        overall_profit_ratio: safe_div(sales_profit + holdings_profit, settled_buys[1] + holdings_btc),
         holdings: holdings,
         holdings_btc: holdings_btc,
         rate: rate,

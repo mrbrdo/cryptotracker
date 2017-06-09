@@ -1,5 +1,6 @@
 class MarketTrade < ApplicationRecord
   validates :trade_type, inclusion: { in: ['buy', 'sell'] }
+  scope :chronological, -> { order("trade_at, id") }
 
   def infer_data!
     trade_currencies = trade_pair.split('_')
@@ -23,10 +24,10 @@ class MarketTrade < ApplicationRecord
   end
 
   def refresh_current_balance!
+    fail unless id
     data =
       MarketTrade.where(trade_pair: trade_pair)
-      .where("trade_at <= ?", trade_at)
-      .where.not(id: id.to_i)
+      .where("trade_at < ? OR (trade_at = ? AND id < ?)", trade_at, trade_at, id)
       .pluck("SUM(CASE WHEN trade_type = 'buy' THEN to_amount ELSE 0 END), SUM(CASE WHEN trade_type = 'sell' THEN from_amount ELSE 0 END)")
       .first || []
     self.all_time_bought = data[0] || BigDecimal(0)

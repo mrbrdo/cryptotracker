@@ -8,8 +8,8 @@ module ApplicationHelper
     red_green(btc(value), value.to_f > 0)
   end
 
-  def ratio_percent(value)
-    "%+d" % (value * 100).round + "%"
+  def ratio_percent(value, decimals = 0)
+    "%+.#{decimals}f" % (value * 100) + "%"
   end
 
   def crypto_currency(data)

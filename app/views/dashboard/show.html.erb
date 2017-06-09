@@ -49,25 +49,41 @@
 </div>
 
 <div class="box">
-  <h1 class="title">Positions</h1>
+  <h1 class="title">
+    Positions
+    <small>
+      <% positions_ratio = @positions.sum { |d| d[:holdings_profit] } / @positions.sum { |d| d[:holdings_btc] } %>
+      <%=red_green(ratio_percent(positions_ratio, 2), positions_ratio >= 0, icon: true) %>
+      <%=btc(@positions.sum { |d| d[:holdings_btc] }, 2) %> BTC
+    </small>
+  </h1>
 
   <table>
     <tr>
       <th>Crypto</th>
-      <th>Profit/Loss</th>
       <th>Current Rate</th>
-      <th>Break Even Rate</th>
+      <th>Position Gain</th>
+      <th>Position Break Even</th>
+      <th>Overall Gain</th>
+      <th>Overall Break Even</th>
       <th>Position</th>
       <th>Position (BTC)</th>
       <th>Orders</th>
     </tr>
 
-    <% @market_data.select { |d| d[:holdings_btc] != 0 }.each do |data| %>
+    <% @positions.each do |data| %>
       <tr>
         <td><b><%=crypto_currency data %></b></td>
-        <td><%=red_green "#{btc(data[:holdings_profit])} (#{ratio_percent(data[:holdings_profit_ratio])})", data[:holdings_profit] >= 0, icon: true %></td>
         <td><%=btc data[:rate] %></td>
+        <td><%=red_green "#{btc(data[:holdings_profit])} (#{ratio_percent(data[:holdings_profit_ratio])})", data[:holdings_profit] >= 0, icon: true %></td>
         <td><%=btc data[:break_even_rate] %></td>
+        <% if data[:sold_amount] == 0 %>
+          <td></td>
+          <td></td>
+        <% else %>
+          <td><%=red_green "#{btc(data[:sales_profit] + data[:holdings_profit])} (#{ratio_percent(data[:overall_profit_ratio])})", data[:overall_profit_ratio] >= 0, icon: true %></td>
+          <td><%=btc data[:average_buy_price] %></td>
+        <% end %>
         <td><%=btc(data[:holdings], 2) %></td>
         <td><%=btc(data[:holdings_btc], 3) %></td>
         <td><%= link_to 'History', currency_trades_path(data[:trade_pair]) %></td>

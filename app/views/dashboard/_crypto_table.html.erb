@@ -1,10 +1,11 @@
 <table>
   <tr>
     <th>Crypto</th>
-    <th>Profit/Loss</th>
+    <th>Gain</th>
     <th>Exit Date</th>
     <th>Average Buy Price</th>
-    <th>Sell Price</th>
+    <th>Sales Rate</th>
+    <th>Last Sale Rate</th>
     <th>Sell Amount</th>
     <th>Current Rate</th>
     <th>Orders</th>
@@ -17,6 +18,7 @@
       <td><%= data[:last_sold_at].try!(:strftime, "%d.%m.%Y %H:%M") %></td>
       <td><%=btc data[:average_buy_price] %></td>
       <td><%=btc data[:sold_price] %></td>
+      <td><%=btc data[:last_sale_rate] %></td>
       <td><%=btc(data[:sold_amount], 2) %></td>
       <td><%=btc data[:rate] %></td>
       <td><%= link_to 'History', currency_trades_path(data[:trade_pair]) %></td>
