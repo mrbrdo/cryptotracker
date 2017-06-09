@@ -1,24 +1,24 @@
-# README
+# INSTALL
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Prerequisites: ruby 2.4.1, postgresql
 
-Things you may want to cover:
+```
+bundle install
+rake db:create db:migrate
+```
 
-* Ruby version
+# Configure
 
-* System dependencies
+Create a `.env` file in the root folder and set your API keys:
 
-* Configuration
+```
+POLONIEX_API_KEY=
+POLONIEX_API_SECRET=
+BITTREX_API_KEY=
+BITTREX_API_SECRET=
+DISABLE_MARKETS=
+```
 
-* Database creation
+# Run
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+`rails server`

@@ -1,0 +1,25 @@
+<table>
+  <tr>
+    <th>Crypto</th>
+    <th>Profit/Loss</th>
+    <th>Exit Date</th>
+    <th>Average Buy Price</th>
+    <th>Sell Price</th>
+    <th>Sell Amount</th>
+    <th>Current Rate</th>
+    <th>Orders</th>
+  </tr>
+
+  <% market_data.sort_by { |d| -d[:sales_profit].abs }.each do |data| %>
+    <tr>
+      <td><b><%=crypto_currency data %></b></td>
+      <td><%=red_green "#{btc(data[:sales_profit])} (#{ratio_percent(data[:sales_profit_ratio])})", data[:sales_profit] >= 0, icon: true %></td>
+      <td><%= data[:last_sold_at].try!(:strftime, "%d.%m.%Y %H:%M") %></td>
+      <td><%=btc data[:average_buy_price] %></td>
+      <td><%=btc data[:sold_price] %></td>
+      <td><%=btc(data[:sold_amount], 2) %></td>
+      <td><%=btc data[:rate] %></td>
+      <td><%= link_to 'History', currency_trades_path(data[:trade_pair]) %></td>
+    </tr>
+<% end %>
+</table>

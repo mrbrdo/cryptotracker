@@ -1,0 +1,29 @@
+<h1 class="title"><%= params[:currency_id] %></h1>
+
+<table>
+  <tr>
+    <th>Date</th>
+    <th>Source</th>
+    <th>Type</th>
+    <th>Price (BTC)</th>
+    <th>Amount</th>
+    <th>Total (BTC)</th>
+  </tr>
+
+  <% @trades.each do |trade| %>
+    <tr>
+      <td><%= trade.trade_at.strftime("%d.%m.%Y %H:%M") %></td>
+      <td><%= trade.source.capitalize %></td>
+      <td>
+        <% if trade.trade_type == 'buy' %>
+          <span style="color: green">buy</span>
+        <% else %>
+          <span style="color: red"><%= trade.trade_type %></span>
+        <% end %>
+      </td>
+      <td><%=btc trade.rate %></td>
+      <td><%=btc trade.amount %></td>
+      <td><%=btc trade.base_total %></td>
+    </tr>
+  <% end %>
+</table>

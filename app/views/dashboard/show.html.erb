@@ -1,0 +1,84 @@
+<div class="box">
+  <h1 class="title">Summary</h1>
+
+  <table>
+    <tr>
+      <th>Open Positions</th>
+      <th>Best Positions</th>
+      <th>Worst Positions</th>
+      <th>Closed Positions</th>
+      <th>Best Completed Trades</th>
+      <th>Worst Completed Trades</th>
+    </tr>
+
+    <tr>
+      <td>
+        <%=profit_color @market_data.select { |d| d[:holdings_profit] >= 0 }.sum { |d| d[:holdings_profit] } %><br>
+        <%=profit_color @market_data.select { |d| d[:holdings_profit] < 0 }.sum { |d| d[:holdings_profit] } %><hr>
+        <%=profit_color @market_data.sum { |d| d[:holdings_profit] } %></td>
+      <td>
+        <% @market_data.sort_by { |d| -d[:holdings_profit_ratio] }.take(3).each do |data| %>
+          <%=crypto_currency data %> - <%=profit_color(data[:holdings_profit]) %> (<%= ratio_percent(data[:holdings_profit_ratio]) %>)
+          <br>
+        <% end %>
+      </td>
+      <td>
+        <% @market_data.sort_by { |d| d[:holdings_profit_ratio] }.take(3).each do |data| %>
+          <%=crypto_currency data %> - <%=profit_color(data[:holdings_profit]) %> (<%= ratio_percent(data[:holdings_profit_ratio]) %>)
+          <br>
+        <% end %>
+      </td>
+      <td>
+        <%=profit_color @market_data.select { |d| d[:sales_profit] >= 0 }.sum { |d| d[:sales_profit] } %><br>
+        <%=profit_color @market_data.select { |d| d[:sales_profit] < 0 }.sum { |d| d[:sales_profit] } %><hr>
+        <%=profit_color @market_data.sum { |d| d[:sales_profit] } %></td>
+      <td>
+        <% @market_data.sort_by { |d| -d[:sales_profit_ratio] }.take(3).each do |data| %>
+          <%=crypto_currency data %> - <%=profit_color(data[:sales_profit]) %> (<%= ratio_percent(data[:sales_profit_ratio]) %>)
+          <br>
+        <% end %>
+      </td>
+      <td>
+        <% @market_data.sort_by { |d| d[:sales_profit_ratio] }.take(3).each do |data| %>
+          <%=crypto_currency data %> - <%=profit_color(data[:sales_profit]) %> (<%= ratio_percent(data[:sales_profit_ratio]) %>)
+          <br>
+        <% end %>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<div class="box">
+  <h1 class="title">Positions</h1>
+
+  <table>
+    <tr>
+      <th>Crypto</th>
+      <th>Profit/Loss</th>
+      <th>Current Rate</th>
+      <th>Break Even Rate</th>
+      <th>Position</th>
+      <th>Position (BTC)</th>
+      <th>Orders</th>
+    </tr>
+
+    <% @market_data.select { |d| d[:holdings_btc] != 0 }.each do |data| %>
+      <tr>
+        <td><b><%=crypto_currency data %></b></td>
+        <td><%=red_green "#{btc(data[:holdings_profit])} (#{ratio_percent(data[:holdings_profit_ratio])})", data[:holdings_profit] >= 0, icon: true %></td>
+        <td><%=btc data[:rate] %></td>
+        <td><%=btc data[:break_even_rate] %></td>
+        <td><%=btc(data[:holdings], 2) %></td>
+        <td><%=btc(data[:holdings_btc], 3) %></td>
+        <td><%= link_to 'History', currency_trades_path(data[:trade_pair]) %></td>
+      </tr>
+  <% end %>
+  </table>
+</div>
+
+<div class="box">
+  <h1 class="title">History</h1>
+
+  <%= render partial: 'dashboard/crypto_table', locals: { market_data: @market_data } %>
+
+</div>
