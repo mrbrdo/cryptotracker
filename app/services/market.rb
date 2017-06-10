@@ -15,9 +15,9 @@ class Market
     end
 
     def ticker
-      return @last_ticker_data if @last_ticker_refresh && @last_ticker_refresh > 10.seconds.ago
-      @last_ticker_refresh = DateTime.now
-      @last_ticker_data = get_ticker
+      return Thread.current[:ticker] if Thread.current[:ticker_at] && Thread.current[:ticker_at] > 10.seconds.ago
+      Thread.current[:ticker_at] = DateTime.now
+      Thread.current[:ticker] = get_ticker
     end
 
     def get_ticker

@@ -7,6 +7,10 @@ class DashboardController < ApplicationController
     @positions = @market_data.select { |d| d[:holdings_btc] != 0 }
   end
 
+  def charts
+    @trade_pairs = MarketTrade.pluck("DISTINCT trade_pair")
+  end
+
 private
   def get_market_data
     MarketTrade.pluck("DISTINCT trade_pair")
@@ -21,8 +25,8 @@ private
         MarketTrade.where(trade_pair: trade_pair)
         .where(trade_type: 'sell').pluck("SUM(from_amount), SUM(to_amount), MAX(trade_at)").first
 
-      last_trade = MarketTrade.where(trade_pair: trade_pair).order(:trade_at).last
-      last_sell = MarketTrade.where(trade_pair: trade_pair, trade_type: 'sell').order(:trade_at).last
+      last_trade = MarketTrade.where(trade_pair: trade_pair).chronological.last
+      last_sell = MarketTrade.where(trade_pair: trade_pair, trade_type: 'sell').chronological.last
 
       open_buy_trades =
         MarketTrade.where(trade_pair: trade_pair)

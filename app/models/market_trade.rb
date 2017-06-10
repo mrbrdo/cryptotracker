@@ -44,7 +44,7 @@ class MarketTrade < ApplicationRecord
 
   def self.refresh_current_balances
     MarketTrade.all.update_all(buy_settled: false)
-    order(:trade_at).each do |record|
+    chronological.each do |record|
       record.refresh_current_balance!
       record.save!
     end
@@ -57,7 +57,7 @@ class MarketTrade < ApplicationRecord
   end
 
   def self.import_all
-    start_date = MarketTrade.order(:trade_at).last.try!(:trade_at)
+    start_date = MarketTrade.chronological.last.try!(:trade_at)
     start_date ||= 1.year.ago
     start_date -= 1.day
     import_poloniex(start_date)
