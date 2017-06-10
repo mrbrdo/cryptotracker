@@ -1,6 +1,8 @@
 <div class="box">
   <h1 class="title">Summary</h1>
 
+  <div><%= link_to 'Charts', '/dashboard/charts' %></div>
+
   <table>
     <tr>
       <th>Open Positions</th>
@@ -49,14 +51,21 @@
 </div>
 
 <div class="box">
-  <h1 class="title">
-    Positions
-    <small>
-      <% positions_ratio = @positions.sum { |d| d[:holdings_profit] } / @positions.sum { |d| d[:holdings_btc] } %>
-      <%=red_green(ratio_percent(positions_ratio, 2), positions_ratio >= 0, icon: true) %>
-      <%=btc(@positions.sum { |d| d[:holdings_btc] }, 2) %> BTC
-    </small>
-  </h1>
+  <div class="columns">
+    <div class="column is-narrow">
+      <h1 class="title">
+        Positions
+      </h1>
+    </div>
+    <div class="column">
+      <small>
+        <% positions_ratio = @positions.sum { |d| d[:holdings_profit] } / @positions.sum { |d| d[:holdings_btc] } %>
+        <%=red_green(ratio_percent(positions_ratio, 2), positions_ratio >= 0, icon: true) %>
+        <%=btc(@positions.sum { |d| d[:holdings_buy_cost] }, 2) %> BTC -&gt;
+        <%=btc(@positions.sum { |d| d[:holdings_btc] }, 2) %> BTC
+      </small>
+    </div>
+  </div>
 
   <table>
     <tr>
@@ -68,7 +77,7 @@
       <th>Overall Break Even</th>
       <th>Position</th>
       <th>Position (BTC)</th>
-      <th>Orders</th>
+      <th>&nbsp;</th>
     </tr>
 
     <% @positions.each do |data| %>
@@ -86,7 +95,7 @@
         <% end %>
         <td><%=btc(data[:holdings], 2) %></td>
         <td><%=btc(data[:holdings_btc], 3) %></td>
-        <td><%= link_to 'History', currency_trades_path(data[:trade_pair]) %></td>
+        <td><%= link_to 'History', currency_trades_path(data[:trade_pair]) %> | <%= link_to "Chart", "https://bittrex.com/market/MarketStandardChart?marketName=#{data[:trade_pair].gsub('_', '-').upcase}", target: "_blank" %></td>
       </tr>
   <% end %>
   </table>

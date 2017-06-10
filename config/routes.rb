@@ -4,4 +4,7 @@ Rails.application.routes.draw do
   resources :currencies do
     resources :trades
   end
+
+  get 'dashboard/charts'
+  get 'charts/ticks'
 end

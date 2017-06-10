@@ -13,12 +13,15 @@ module ApplicationHelper
   end
 
   def crypto_currency(data)
-    name = Market.currency_name(data[:trade_currency])
-    icon =
-      if name
-        %{<img src="https://files.coinmarketcap.com/static/img/coins/16x16/#{name.downcase}.png" onerror="this.parentNode.removeChild(this)">&nbsp;}
-      end
+    icon = currency_icon(data[:trade_currency])
     %{<a href="#{data[:exchange_link]}" target="_blank">#{icon}#{html_escape data[:trade_currency]}</a>}.html_safe
+  end
+
+  def currency_icon(code)
+    name = Market.currency_name(code)
+    if name
+      %{<img src="https://files.coinmarketcap.com/static/img/coins/16x16/#{name.downcase}.png" onerror="this.parentNode.removeChild(this)">&nbsp;}.html_safe
+    end
   end
 
   def red_green(value, green, icon: false)
